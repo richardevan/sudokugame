@@ -87,7 +87,7 @@ def sudogen_1(board):
 def rgb(red, green, blue):
     return "#%02x%02x%02x" % (red, green, blue)
 
-class SudokuGUI(Frame):
+class Sudoku(Frame):
     board_generators = {"SudoGen v1 (Very Easy)":sudogen_1}
     board_generator = staticmethod(sudogen_1)
 
@@ -128,39 +128,6 @@ class SudokuGUI(Frame):
         fbox.pack()
         window.mainloop()
 
-    def query_board(self):
-        window = self.make_modal_window("Set Board Algorithm")
-
-        scroll = Scrollbar(window)
-        scroll.pack(side='right', fill='y')
-
-        listbox = Listbox(window, yscrollcommand=scroll.set) 
-
-        scroll.config(command=listbox.yview)
-
-        bframe = Frame(window)
-
-        for s in self.board_generators.keys():
-            listbox.insert(-1, s)
-
-        def do_ok():
-            self.board_generator = self.board_generators[listbox.get(ACTIVE)]
-            window.destroy()
-
-        def do_cancel():
-            window.destroy()
-
-
-        cancel = Button(bframe, command=do_cancel, text="Cancel")
-        cancel.pack(side='right', fill='x')
-
-        ok = Button(bframe, command=do_ok, text="Ok")
-        ok.pack(side='right', fill='x')
-
-        listbox.pack(side='top', fill='both', expand='1')
-        bframe.pack(side='top', fill='x', expand='1')
-
-        window.mainloop()
 
     def make_grid(self):
         c = Canvas(self, bg=rgb(128,128,128), width='512', height='512')
@@ -226,7 +193,7 @@ class SudokuGUI(Frame):
         Frame.__init__(self, master)
 
         if master:
-            master.title("SudokuGUI")
+            master.title("Sudoku Game")
 
         self.board = board
         self.board_generator(board)
@@ -251,5 +218,5 @@ class SudokuGUI(Frame):
 if __name__ == '__main__':
     board = SudokuBoard()
     tk = Tk()
-    gui = SudokuGUI(tk, board)
+    gui = Sudoku(tk, board)
     gui.mainloop()
