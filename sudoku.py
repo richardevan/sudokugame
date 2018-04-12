@@ -1,16 +1,12 @@
 import random
 import time
-import os
-import tkinter.tix
 import pickle
-from tkinter import *
-from tkinter.constants import *
+from tkinter import Frame, Toplevel, Canvas, Button
 from tkinter.tix import FileSelectBox, Tk
-
 random.seed(time.time())
 
-class SudokuBoard:
 
+class SudokuBoard:
     def __init__(self):
         self.clear()
 
@@ -33,7 +29,7 @@ class SudokuBoard:
                 return 3
             else:
                 return 6
-        return [y[make_index(col):make_index(col)+3] for y in 
+        return [y[make_index(col):make_index(col)+3] for y in
                 self.grid[make_index(row):make_index(row)+3]]
 
     def set(self, col, row, v, lock=False):
@@ -67,8 +63,10 @@ class SudokuBoard:
                     newline_counter = 0
         return '\n'.join(strings)
 
+
 def sudogen_1(board):
-    """Algorithm: enter a random number between 1-9 to each subgrid in the board, don't enter a duplicate random numbers."""
+    """Algorithm: enter a random number between 1-9 to each
+    subgrid in the board, don't enter a duplicate random numbers."""
     board.clear()
     added = [0]
     for y in range(0, 9, 3):
@@ -79,16 +77,19 @@ def sudogen_1(board):
             while i in added:
                 i = random.randint(1, 9)
             try:
-                board.set(random.randint(x, x+2), random.randint(y, y+2), i, lock=True)
+                board.set(random.randint(x, x+2),
+                          random.randint(y, y+2), i, lock=True)
             except ValueError:
                 print("Board rule violation, this shouldn't happen!")
             added.append(i)
 
+
 def rgb(red, green, blue):
     return "#%02x%02x%02x" % (red, green, blue)
 
+
 class Sudoku(Frame):
-    board_generators = {"SudoGen v1 (Very Easy)":sudogen_1}
+    board_generators = {"SudoGen v1 (Very Easy)": sudogen_1}
     board_generator = staticmethod(sudogen_1)
 
     def new_game(self):
@@ -128,11 +129,9 @@ class Sudoku(Frame):
         fbox.pack()
         window.mainloop()
 
-
     def make_grid(self):
-        c = Canvas(self, bg=rgb(128,128,128), width='512', height='512')
+        c = Canvas(self, bg=rgb(128, 128, 128), width='512', height='512')
         c.pack(side='top', fill='both', expand='1')
-
         self.rects = [[None for x in range(9)] for y in range(9)]
         self.handles = [[None for x in range(9)] for y in range(9)]
         rsize = 512/9
@@ -141,7 +140,7 @@ class Sudoku(Frame):
         for y in range(9):
             for x in range(9):
                 (xr, yr) = (x*guidesize, y*guidesize)
-                self.rects[y][x] = c.create_rectangle(xr, yr, xr+guidesize, 
+                self.rects[y][x] = c.create_rectangle(xr, yr, xr+guidesize,
                                                       yr+guidesize, width=3)
                 (xr, yr) = (x*rsize, y*rsize)
                 r = c.create_rectangle(xr, yr, xr+rsize, yr+rsize)
@@ -157,32 +156,34 @@ class Sudoku(Frame):
         for y in range(9):
             for x in range(9):
                 if g[y][x] != 0:
-                    self.canvas.itemconfig(self.handles[y][x][1], 
+                    self.canvas.itemconfig(self.handles[y][x][1],
                                            text=str(g[y][x]))
                 else:
-                    self.canvas.itemconfig(self.handles[y][x][1], 
+                    self.canvas.itemconfig(self.handles[y][x][1],
                                            text='')
 
     def canvas_click(self, event):
         print("Click! (%d,%d)" % (event.x, event.y))
         self.canvas.focus_set()
         rsize = 512/9
-        (x,y) = (0, 0)
+        (x, y) = (0, 0)
         if event.x > rsize:
             x = int(event.x/rsize)
         if event.y > rsize:
             y = int(event.y/rsize)
-        print(x,y)
+        print(x, y)
         if self.current:
             (tx, ty) = self.current
-            #self.canvas.itemconfig(self.handles[ty][tx][0], fill=rgb(128,128,128))
-        self.current = (x,y)
+            # self.canvas.itemconfig(self.handles[ty][tx][0],
+            # fill=rgb(128,128,128))
+        self.current = (x, y)
 
     def canvas_key(self, event):
         print("Clack! (%s)" % (event.char))
         if event.char.isdigit() and int(event.char) > 0 and self.current:
-            (x,y) = self.current
-            #self.canvas.itemconfig(self.handles[y][x][0], fill=rgb(128,128,128))
+            (x, y) = self.current
+            # self.canvas.itemconfig(self.handles[y][x][0],
+            # fill=rgb(128,128,128))
             try:
                 self.board.set(x, y, int(event.char))
                 self.sync_board_and_canvas()
@@ -214,6 +215,7 @@ class Sudoku(Frame):
         self.canvas.bind("<Key>", self.canvas_key)
         self.current = None
         self.pack()
+
 
 if __name__ == '__main__':
     board = SudokuBoard()
